@@ -1,0 +1,51 @@
+[90m= [39m[
+    {#5325
+      +"[1mField[22m": "[32mid[39m",
+      +"[1mType[22m": "[32mbigint unsigned[39m",
+      +"[1mNull[22m": "[32mNO[39m",
+      +"[1mKey[22m": "[32mPRI[39m",
+      +"[1mDefault[22m": [36mnull[39m,
+      +"[1mExtra[22m": "[32mauto_increment[39m",
+    },
+    {#5323
+      +"[1mField[22m": "[32muser_id[39m",
+      +"[1mType[22m": "[32mbigint unsigned[39m",
+      +"[1mNull[22m": "[32mNO[39m",
+      +"[1mKey[22m": "[32mUNI[39m",
+      +"[1mDefault[22m": [36mnull[39m,
+      +"[1mExtra[22m": "",
+    },
+    {#5322
+      +"[1mField[22m": "[32mbalance_cents[39m",
+      +"[1mType[22m": "[32mbigint unsigned[39m",
+      +"[1mNull[22m": "[32mNO[39m",
+      +"[1mKey[22m": "",
+      +"[1mDefault[22m": "[32m0[39m",
+      +"[1mExtra[22m": "",
+    },
+    {#5327
+      +"[1mField[22m": "[32mpending_cents[39m",
+      +"[1mType[22m": "[32mbigint unsigned[39m",
+      +"[1mNull[22m": "[32mNO[39m",
+      +"[1mKey[22m": "",
+      +"[1mDefault[22m": "[32m0[39m",
+      +"[1mExtra[22m": "",
+    },
+    {#5309
+      +"[1mField[22m": "[32mcreated_at[39m",
+      +"[1mType[22m": "[32mtimestamp[39m",
+      +"[1mNull[22m": "[32mYES[39m",
+      +"[1mKey[22m": "",
+      +"[1mDefault[22m": [36mnull[39m,
+      +"[1mExtra[22m": "",
+    },
+    {#5328
+      +"[1mField[22m": "[32mupdated_at[39m",
+      +"[1mType[22m": "[32mtimestamp[39m",
+      +"[1mNull[22m": "[32mYES[39m",
+      +"[1mKey[22m": "",
+      +"[1mDefault[22m": [36mnull[39m,
+      +"[1mExtra[22m": "",
+    },
+  ]
+

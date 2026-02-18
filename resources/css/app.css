@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ✅ Inputs / textarea / select : texte lisible + fond cohérent dark */
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    @apply text-slate-100 placeholder:text-slate-500 bg-slate-950/20 border-white/10;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  textarea:focus,
+  select:focus {
+    @apply outline-none ring-2 ring-indigo-500/40 border-white/20;
+  }
+
+  /* ✅ Pour que le texte sélectionné soit visible */
+  input::selection,
+  textarea::selection {
+    background: rgba(99, 102, 241, 0.35); /* indigo */
+    color: rgb(226, 232, 240);            /* slate-200 */
+  }
+}
+
+/* ✅ IMPORTANT : <option> n’obéit pas toujours à Tailwind (OS/browser).
+   On force en CSS "classique" pour éviter fond clair + texte blanc */
+select option {
+  background-color: rgb(15, 23, 42); /* slate-900 */
+  color: rgb(226, 232, 240);         /* slate-200 */
+}
+@import "./valyro-ui.css";
