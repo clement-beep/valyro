@@ -8,6 +8,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
+      [x-cloak]{ display:none !important; }
+
       :root{
         --page:#0B0A18;
         --page-2:#141127;
@@ -51,6 +53,7 @@
         background: rgba(255,255,255,.10);
         border-color: rgba(245,197,66,.18);
       }
+
       .btn-grad{
         background: linear-gradient(135deg, rgba(245,197,66,1), rgba(225,29,72,.92));
         color: rgba(12,10,22,.92);
@@ -99,7 +102,29 @@
 <div class="min-h-full page-glow">
 
     {{-- Header --}}
-    <header class="sticky top-0 z-50">
+    <header
+        x-data="{
+          mobileOpen:false,
+          lockScroll(){
+            document.documentElement.classList.toggle('overflow-hidden', this.mobileOpen);
+            document.body.classList.toggle('overflow-hidden', this.mobileOpen);
+          },
+          open(){
+            this.mobileOpen = true;
+            this.lockScroll();
+          },
+          close(){
+            this.mobileOpen = false;
+            this.lockScroll();
+          },
+          toggle(){
+            this.mobileOpen = !this.mobileOpen;
+            this.lockScroll();
+          }
+        }"
+        @keydown.escape.window="close()"
+        class="sticky top-0 z-50"
+    >
         <div class="glass border-b border-white/10">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between gap-4">
@@ -113,7 +138,7 @@
                         </div>
                     </a>
 
-                    {{-- Nav --}}
+                    {{-- Nav (Desktop) --}}
                     <nav class="hidden md:flex items-center gap-2">
                         @if($layoutIsLogged)
 
@@ -162,10 +187,11 @@
                         @endif
                     </nav>
 
-                    {{-- Right --}}
-                    @if($layoutIsLogged)
-                        <div class="flex items-center gap-2">
+                    {{-- Right + Mobile button --}}
+                    <div class="flex items-center gap-2">
 
+                        {{-- Logged right (desktop only) --}}
+                        @if($layoutIsLogged)
                             <div class="hidden sm:block text-right">
                                 <div class="text-sm font-medium text-white">{{ $layoutUserName }}</div>
                                 <div class="text-xs muted">{{ $layoutUserEmail }}</div>
@@ -211,19 +237,179 @@
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ $navUrls['logout'] }}">
+                            <form method="POST" action="{{ $navUrls['logout'] }}" class="hidden md:block">
                                 @csrf
                                 <button class="px-3 py-2 rounded-lg text-sm border border-white/10 bg-white/5 hover:bg-white/10">
                                     Déconnexion
                                 </button>
                             </form>
+                        @endif
 
-                        </div>
-                    @endif
+                        {{-- Mobile toggle (burger <-> X) --}}
+                        <button
+                            type="button"
+                            class="md:hidden inline-flex items-center justify-center p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10"
+                            @click="toggle()"
+                            :aria-expanded="mobileOpen.toString()"
+                            aria-label="Ouvrir le menu"
+                        >
+                            <svg x-show="!mobileOpen" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 4h14a1 1 0 010 2H3a1 1 0 110-2zm0 4h14a1 1 0 010 2H3a1 1 0 110-2z" clip-rule="evenodd" />
+                            </svg>
+                            <svg x-show="mobileOpen" x-cloak xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 6 6 18"></path>
+                                <path d="m6 6 12 12"></path>
+                            </svg>
+                        </button>
+
+                    </div>
 
                 </div>
             </div>
         </div>
+
+        {{-- Overlay (mobile) --}}
+        <div
+            class="fixed inset-0 z-40 md:hidden"
+            x-show="mobileOpen"
+            x-cloak
+            x-transition.opacity
+            @click="close()"
+            aria-hidden="true"
+        >
+            <div class="absolute inset-0 bg-black/55"></div>
+        </div>
+
+        {{-- Drawer (mobile) --}}
+        <aside
+            class="fixed right-0 top-0 z-50 h-full w-[86%] max-w-sm md:hidden"
+            x-show="mobileOpen"
+            x-cloak
+            x-transition:enter="transition transform duration-200 ease-out"
+            x-transition:enter-start="translate-x-full"
+            x-transition:enter-end="translate-x-0"
+            x-transition:leave="transition transform duration-200 ease-in"
+            x-transition:leave-start="translate-x-0"
+            x-transition:leave-end="translate-x-full"
+            @click.outside="close()"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div class="h-full glass border-l border-white/10">
+                <div class="flex items-center justify-between px-4 h-16 border-b border-white/10">
+                    <div class="flex items-center gap-2">
+                        <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-500"></div>
+                        <div class="leading-tight">
+                            <div class="font-semibold text-white">Menu</div>
+                            <div class="text-xs muted">Navigation rapide</div>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="inline-flex items-center justify-center p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10"
+                        @click="close()"
+                        aria-label="Fermer le menu"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18"></path>
+                            <path d="m6 6 12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="p-4 space-y-3">
+
+                    @if($layoutIsLogged)
+                        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                            <div class="text-sm font-semibold text-white">{{ $layoutUserName }}</div>
+                            <div class="text-xs muted">{{ $layoutUserEmail }}</div>
+
+                            <div class="mt-3 rounded-xl border border-white/10 bg-white/5 p-3">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-white/80">Points</span>
+                                    <span class="font-semibold text-white">
+                                        {{ $layoutBalancePts }}
+                                        <span class="text-xs font-normal muted">(≈ {{ $layoutBalanceEur }})</span>
+                                    </span>
+                                </div>
+                                <div class="mt-2 flex items-center justify-between text-sm">
+                                    <span class="text-white/80">En attente</span>
+                                    <span class="font-semibold text-white">
+                                        {{ $layoutPendingPts }}
+                                        <span class="text-xs font-normal muted">(≈ {{ $layoutPendingEur }})</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <nav class="space-y-2">
+                            <a @click="close()" href="{{ $navUrls['dashboard'] }}"
+                               class="navlink px-3 py-2 rounded-xl block text-sm {{ request()->routeIs('dashboard') ? 'navlink-active font-semibold' : 'text-white/80' }}">
+                                Dashboard
+                            </a>
+
+                            <a @click="close()" href="{{ $navUrls['offers'] }}"
+                               class="navlink px-3 py-2 rounded-xl block text-sm {{ request()->routeIs('offers') ? 'navlink-active font-semibold' : 'text-white/80' }}">
+                                Offres
+                            </a>
+
+                            <a @click="close()" href="{{ $navUrls['withdraw'] }}"
+                               class="navlink px-3 py-2 rounded-xl block text-sm {{ request()->routeIs('withdraw') ? 'navlink-active font-semibold' : 'text-white/80' }}">
+                                Échanges
+                            </a>
+
+                            <a @click="close()" href="{{ $navUrls['profile'] }}"
+                               class="navlink px-3 py-2 rounded-xl block text-sm {{ request()->routeIs('profile.*') ? 'navlink-active font-semibold' : 'text-white/80' }}">
+                                Profil
+                            </a>
+
+                            @if($layoutIsAdmin)
+                                <a @click="close()" href="{{ route('admin.conversions') }}"
+                                   class="navlink px-3 py-2 rounded-xl block text-sm {{ request()->routeIs('admin.conversions') ? 'navlink-active font-semibold' : 'text-white/80' }}">
+                                    Admin • Postbacks
+                                </a>
+
+                                <a @click="close()" href="{{ route('admin.withdrawals') }}"
+                                   class="navlink px-3 py-2 rounded-xl block text-sm {{ request()->routeIs('admin.withdrawals') ? 'navlink-active font-semibold' : 'text-white/80' }}">
+                                    Admin • Retraits
+                                </a>
+                            @endif
+                        </nav>
+
+                        <form method="POST" action="{{ $navUrls['logout'] }}" class="pt-2">
+                            @csrf
+                            <button class="w-full px-3 py-2 rounded-xl text-sm border border-white/10 bg-white/5 hover:bg-white/10 text-left">
+                                Déconnexion
+                            </button>
+                        </form>
+
+                    @else
+                        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                            <div class="text-sm font-semibold text-white">Bienvenue</div>
+                            <div class="text-xs muted mt-1">Connecte-toi pour suivre tes points et tes offres.</div>
+                        </div>
+
+                        <nav class="space-y-2">
+                            <a @click="close()" href="{{ $navUrls['login'] }}"
+                               class="navlink px-3 py-2 rounded-xl block text-sm text-white/80">
+                                Connexion
+                            </a>
+                            <a @click="close()" href="{{ $navUrls['register'] }}"
+                               class="px-3 py-2 rounded-xl block text-sm font-semibold btn-grad shadow-sm text-center">
+                                Inscription
+                            </a>
+                        </nav>
+                    @endif
+
+                    <div class="pt-2 text-xs muted">
+                        Astuce : appuie sur <span class="text-white/80 font-semibold">Échap</span> pour fermer.
+                    </div>
+
+                </div>
+            </div>
+        </aside>
+
     </header>
 
     {{-- Main --}}
